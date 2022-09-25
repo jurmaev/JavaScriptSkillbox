@@ -1,23 +1,18 @@
-let roadMines =  [true, true, true, true, true, true, true, true, true, true];
-let hits = 0;
-let isStreak = false;
+let roadMines =  [false, false, false, true, false, false, false, false, false, false] ;
+let lives = 2;
 
-for (let mine in roadMines) {
-    if(roadMines[parseInt(mine)] && hits === 0) {
-        process.stdout.write('танк поврежден, ');
-        isStreak = false;
-        hits++;
-    }
-    else if (roadMines[parseInt(mine)] && hits === 1) {
-        process.stdout.write('танк уничтожен');
-        break;
-    }
-
-    if (!isStreak) {
-        process.stdout.write(`танк переместился на ${parseInt(mine) + 1}, `);
-        isStreak = true;
+for (let i = 0; i < roadMines.length; i++) { 
+    if (roadMines[i]) {
+        lives--; 
+        if (lives === 1) {
+            console.log(`танк поврежден, танк переместился на ${i+1}`);
+        } 
+        else if (lives === 0) {
+            console.log(`танк переместился на ${i+1}, танк уничтожен`);
+            break;
+        } 
     }
     else {
-        process.stdout.write(`${parseInt(mine) + 1}, `);
+        console.log(`танк переместился на ${i+1}`);
     }
 }

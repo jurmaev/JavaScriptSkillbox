@@ -2,17 +2,17 @@ let objects = [
     { name: 'Василий', surname: 'Васильев' },
     { name: 'Иван', surname: 'Иванов' },
     { name: 'Иван', surname: 'Васильев' },
-    { name: 'Пётр', surname: 'Петров' }
+    { name: 'Пётр', surname: 'Петров' },
 ];
 
 function filter(objects, propertyName, propertyValue) {
-    let result = [];
+    let filtered = [];
     for (let object of objects) {
         if (propertyName in object && Object.values(object).includes(propertyValue))
-            result.push(object);
+            filtered.push(object);
     }
-    return result;
+    return filtered;
 }
 
-let result = filter(objects, 'name', 'Иван');
-console.log(result);
+
+console.log(filter(objects, 'name', 'Иван'));
