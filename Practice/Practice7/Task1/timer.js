@@ -1,12 +1,8 @@
-document.addEventListener('DOMContentLoaded', function () {
+(function () {
     let input = document.getElementById('input');
     let button = document.getElementById('button');
     let countdown = document.getElementById('countdown');
-
     let myCounter;
-
-    button.addEventListener('click', timer);
-
     let seconds;
 
     function decreaseTimer() {
@@ -24,4 +20,9 @@ document.addEventListener('DOMContentLoaded', function () {
         countdown.textContent = seconds;
         myCounter = setInterval(decreaseTimer, 1000);
     };
-});
+
+    document.addEventListener('DOMContentLoaded', function () {
+        button.addEventListener('click', timer);
+    });
+})();
+
