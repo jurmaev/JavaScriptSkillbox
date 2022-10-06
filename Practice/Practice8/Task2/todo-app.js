@@ -66,41 +66,32 @@
         };
     }
 
-    function addTaskToStorage(task, storageKey) { 
-        let tasks = [];
-        if(JSON.parse(window.localStorage.getItem(storageKey)) != null)
-            tasks = JSON.parse(window.localStorage.getItem(storageKey));
-        tasks.push(task);
+    function updateStorage(tasks, storageKey) {
         window.localStorage.setItem(storageKey, JSON.stringify(tasks));
     }
 
-    function removeTaskFromStorage(task, storageKey) {
-        let tasks = JSON.parse(window.localStorage.getItem(storageKey));
-        tasks.splice(tasks.findIndex(t => t.name === task.name), 1);
-        window.localStorage.setItem(storageKey, JSON.stringify(tasks));
-    }
-
-    function updateTaskInStorage(task, storageKey) {
-        let tasks = JSON.parse(window.localStorage.getItem(storageKey));
-        let index = tasks.findIndex(t => t.name === task.name);
-
-        tasks[index].done = !tasks[index].done;
-        window.localStorage.setItem(storageKey, JSON.stringify(tasks));
+    function getTasksFromStorage(storageKey) {
+        return JSON.parse(window.localStorage.getItem(storageKey));
     }
 
     function addListenersToItem(todoItem, storageKey) {
         let task = { name: todoItem.item.firstChild.textContent, done: todoItem.item.classList.contains('list-group-item-success') };
 
         todoItem.doneButton.addEventListener('click', function () {
+            let tasks = getTasksFromStorage(storageKey);
+            let index = tasks.findIndex(x => x.name === task.name);
             todoItem.item.classList.toggle('list-group-item-success');
-            updateTaskInStorage(task, 
-            storageKey);
+            console.log(tasks);
+            tasks[index].done = todoItem.item.classList.contains('list-group-item-success');
+            console.log(tasks);
+            updateStorage(tasks, storageKey);
         });
 
         todoItem.deleteButton.addEventListener('click', function () {
             if (confirm('Вы уверены?')) {
-                removeTaskFromStorage(task, 
-                storageKey);
+                let tasks = getTasksFromStorage(storageKey);
+                tasks = tasks.filter(x => x.name != task.name);
+                updateStorage(tasks, storageKey);
                 todoItem.item.remove();
             }
         });
@@ -121,6 +112,8 @@
                 todoList.append(todoItem.item);
                 addListenersToItem(todoItem, storageKey);
             }
+        } else {
+            tasks = [];
         }
 
         todoItemForm.input.addEventListener('input', function () {
@@ -140,8 +133,8 @@
             addListenersToItem(todoItem, storageKey);
 
             todoList.append(todoItem.item);
-            console.log(myTask)
-            addTaskToStorage(myTask, storageKey);
+            tasks.push(myTask);
+            updateStorage(tasks, storageKey);
 
             todoItemForm.input.value = '';
             todoItemForm.button.disabled = true;
