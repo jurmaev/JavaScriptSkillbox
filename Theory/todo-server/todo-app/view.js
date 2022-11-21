@@ -58,6 +58,7 @@ function createTodoItemElement(task, { onDone, onDelete }) {
 
     doneButton.addEventListener('click', function () {
         onDone({ todoItem: task, element: item });
+        task.done = !task.done;
         item.classList.toggle('list-group-item-success', task.done);
     });
 
@@ -72,44 +73,23 @@ function createTodoItemElement(task, { onDone, onDelete }) {
     return item;
 }
 
-async function createTodoApp(container, title, owner, tasks = []) {
+async function createTodoApp(container, {title, owner, todoItemList = [], onCreateFormSubmit, onDoneClick, onDeleteClick} ) {
     const todoAppTitle = createAppTitle(title);
     const todoItemForm = createTodoItemForm();
     const todoList = createTodoList();
-    const handlers = {
-        onDone({ todoItem, element }) {
-            console.log(todoItem)
-            todoItem.done = !todoItem.done;
-            fetch(`http://localhost:3000/api/todos/${todoItem.id}`, {
-                method: 'PATCH',
-                body: JSON.stringify({ done: todoItem.done }),
-                headers: { 'Content-Type': 'application/json' }
-            });
-        },
-        onDelete({ todoItem, element }) {
-            if (!confirm('Вы уверены?'))
-                return;
-            element.remove();
-            fetch(`http://localhost:3000/api/todos/${todoItem.id}`, {
-                method: 'DELETE'
-            });
-        }
-    }
+    const handlers = {onDone: onDoneClick, onDelete: onDeleteClick};
 
     container.append(todoAppTitle);
     container.append(todoItemForm.form);
     container.append(todoList);
 
-    for (const task of tasks) {
+    for (const task of todoItemList) {
         createTodoItemElement(task, handlers);
     }
 
     todoItemForm.input.addEventListener('input', function () {
         todoItemForm.button.disabled = todoItemForm.input.value === '';
     })
-
-    const response = await fetch(`http://localhost:3000/api/todos?owner=${owner}`);
-    const todoItemList = await response.json();
 
     todoItemList.forEach(todoItem => {
         const todoItemElement = createTodoItemElement(todoItem, handlers);
@@ -121,22 +101,9 @@ async function createTodoApp(container, title, owner, tasks = []) {
 
         if (!todoItemForm.input.value) {
             return;
-        }
+        } 
 
-        const response = await fetch('http://localhost:3000/api/todos', {
-            method: 'POST',
-            body: JSON.stringify({
-                name: todoItemForm.input.value.trim(),
-                owner,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
-
-        const todoItem = await response.json();
-
-        // console.log(todoItem.name)
+        const todoItem = await onCreateFormSubmit({owner, name: todoItemForm.input.value.trim()});
 
         let todoItemElement = createTodoItemElement(todoItem, handlers);
 
