@@ -57,7 +57,6 @@ function createTodoItemElement(task, { onDone, onDelete }) {
     deleteButton.textContent = 'Удалить';
 
     doneButton.addEventListener('click', function () {
-        console.log(task)
         onDone({ todoItem: task, element: item });
         item.classList.toggle('list-group-item-success', task.done);
     });

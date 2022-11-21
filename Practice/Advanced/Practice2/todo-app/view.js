@@ -57,8 +57,8 @@ function createTodoItemElement(task, { onDone, onDelete }) {
     deleteButton.textContent = 'Удалить';
 
     doneButton.addEventListener('click', function () {
-        console.log(task)
         onDone({ todoItem: task, element: item });
+        task.done = !task.done;
         item.classList.toggle('list-group-item-success', task.done);
     });
 
@@ -79,10 +79,11 @@ async function createTodoApp(container, {title, owner, todoItemList = [], onCrea
     const todoList = createTodoList();
     const handlers = {onDone: onDoneClick, onDelete: onDeleteClick};
 
+    container.innerHTML = '';
     container.append(todoAppTitle);
     container.append(todoItemForm.form);
     container.append(todoList);
-
+    todoItemList = todoItemList || [];
     for (const task of todoItemList) {
         createTodoItemElement(task, handlers);
     }
