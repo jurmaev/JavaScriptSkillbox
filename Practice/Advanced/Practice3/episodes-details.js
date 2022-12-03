@@ -7,7 +7,9 @@ function createList(items) {
         list.append(item);
     });
     list.classList.add('list-group', 'mb-4');
-    return document.createElement('div').append(list);
+    const div = document.createElement('div');
+    div.append(list);
+    return div;
 }
 
 export function render(data, planets, species) {
